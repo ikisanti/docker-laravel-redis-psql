@@ -1,0 +1,40 @@
+services:
+  web:
+    image: app-laravel:latest
+    build:
+      target: web
+      context: .
+    env_file:
+      - .env
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db
+      - redis
+
+  db:
+    platform: "linux/amd64"
+    image: postgres:16
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5442:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6389:6379"
+    volumes:
+      - redisdata:/data
+
+volumes:
+  dbdata:
+  redisdata:
